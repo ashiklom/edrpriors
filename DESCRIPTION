@@ -1,0 +1,12 @@
+Package: edrpriors
+Title: Fit EDR prior distributions
+Version: 0.0.0.9000
+Authors@R: person("Alexey", "Shiklomanov", email = "ashiklom@bu.edu", role = c("aut", "cre"))
+Description: Fir EDR prior distributions
+Depends:
+    R (>= 3.3.2),
+    nimble
+License: MIT License
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 5.0.1
