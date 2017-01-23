@@ -1,8 +1,5 @@
 #' @export
-fit_prior_multivariate <- 
-    function(data_matrix,
-             niter = 10000,
-             nburn = 5000) {
+fit_multivariate <- function(data_matrix, ...) {
 
     nc <- ncol(data_matrix)
     nr <- nrow(data_matrix)
@@ -42,25 +39,11 @@ fit_prior_multivariate <-
                                         Omega = diag(1, nc),
                                         x_pred = matrix(0, nr, nc)))
 
-    mvConf <- configureMCMC(mvmodel)
-    mvConf$addMonitors(c('M', 'Sigma'))
+    mvConf <- configureMCMC(mvmodel, monitors = c('M', 'Sigma'))
     mv_mcmc <- buildMCMC(mvConf)
-    CmvMCMC <- compileNimble(mvmodel, mv_mcmc)
+    Cmv <- compileNimble(model = mvmodel, mcmc = mv_mcmc)
 
-    CmvMCMC$mv_mcmc$run(niter)
-    samples <- as.matrix(CmvMCMC$mv_mcmc$mvSamples)[-nburn:0,]
-    colnames(samples)[1:nc] <- colnames(data_matrix)
+    samples <- runMCMC(Cmv$mcmc, ...)
 
-    means <- colMeans(samples)
-
-    M_mean <- means[colnames(data_matrix)]
-
-    Sigma_mean <- matrix(means[grepl('Sigma', names(means))], 
-                         ncol = nc, 
-                         byrow = TRUE)
-    colnames(Sigma_mean) <- rownames(Sigma_mean) <- colnames(data_matrix)
-
-    output <- list(means = list(M = M_mean, Sigma = Sigma_mean),
-                   samples = samples)
-    return(output)
+    return(samples)
 }
