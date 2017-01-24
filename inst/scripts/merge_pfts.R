@@ -13,15 +13,18 @@ my_species <- distinct(dat, SpeciesCode)
 ed_modeltype <- 1
 
 used_pfts <- c('temperate.Early_Hardwood',
-               'temperate.Mid_Hardwood',
+               'temperate.North_Mid_Hardwood',
                'temperate.Late_Hardwood',
-               'temperate.North_Pine',
+               'temperate.Northern_Pine',
+               'temperate.Southern_Pine',
+               'temperate.Mid_conifer',
                'temperate.Late_Conifer')
 
-#tbl(bety, 'pfts') %>%
+#pfts <- tbl(bety, 'pfts') %>%
     #filter(modeltype_id == ed_modeltype) %>%
     #select(pft.id = id, pft.name = name) %>%
-    #filter(pft.name %like% 'Optics%')
+    #filter(pft.name %like% '%temperate%') %>%
+    #collect()
 
 ed_pft_species <- tbl(bety, 'species') %>%
     select(species.id = id, SpeciesCode = AcceptedSymbol) %>%
