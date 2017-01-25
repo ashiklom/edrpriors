@@ -57,6 +57,7 @@ bety_traits <- tbl(bety, 'traits') %>%
                                  .$variable_name == 'LMA' ~ .$value,
                                  TRUE ~ NA_real_),
            leaf_mass_per_area = udunits2::ud.convert(bety_lma, 'kg m-2', 'g m-2')) %>%
+    filter(bety_lma < 1) %>%
     select(bety_species_id, leaf_mass_per_area) %>%
     mutate(FullName = paste0('bety_trait_', row_number()),
            Project = 'bety_trait') %>%
