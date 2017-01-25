@@ -35,12 +35,37 @@ ed_pft_species <- tbl(bety, 'species') %>%
                       name %in% used_pfts) %>%
                select(pft.id = id, pft.name = name)) %>%
     filter(SpeciesCode != '') %>%
-    select(SpeciesCode, pft.name) %>%
+    select(SpeciesCode, pft.name, bety_species_id = species.id) %>%
     collect(n = Inf) %>%
     setDT() %>%
     setkey(SpeciesCode)
 
 merged_species <- inner_join(ed_pft_species, my_species)
 
-dat_pft <- inner_join(dat, merged_species)
-saveRDS(dat_pft, '../extdata/dat_pft.rds')
+tbl(bety, 'variables') %>%
+    #filter(name %like% '%LMA%')
+    filter(name %like% '%SLA%')
+
+bety_traits <- tbl(bety, 'traits') %>%
+    filter(specie_id %in% merged_species$bety_species_id,
+           variable_id %in% c(15, 254)) %>%
+    select(bety_species_id = specie_id, variable_id,
+           value = mean, entity_id) %>%
+    collect %>%
+    mutate(variable_name = recode(variable_id, `15` = 'SLA', `254` = 'LMA')) %>%
+    mutate(bety_lma = case_when(.$variable_name == 'SLA' ~ 1/.$value,
+                                 .$variable_name == 'LMA' ~ .$value,
+                                 TRUE ~ NA_real_),
+           leaf_mass_per_area = udunits2::ud.convert(bety_lma, 'kg m-2', 'g m-2')) %>%
+    select(bety_species_id, leaf_mass_per_area) %>%
+    mutate(FullName = paste0('bety_trait_', row_number()),
+           Project = 'bety_trait') %>%
+    left_join(merged_species) %>%
+    setDT()
+
+prospect5_results <- inner_join(dat, merged_species) %>%
+    full_join(bety_traits) %>%
+    mutate(leaf_mass_per_area = if_else(is.nan(leaf_mass_per_area), 
+                                        NA_real_, leaf_mass_per_area))
+    
+save(prospect5_results, file = '../../data/prospect5_results.RData')
