@@ -10,6 +10,9 @@ pft_levels <- c('temperate.Early_Hardwood',
                 'temperate.Late_Conifer')
 
 results <- readRDS('mvtraits_raw_output.rds')
-
 priors_all <- summarize_stan(results, params, pft_levels)
 save(priors_all, file = 'stan_priors.RData')
+
+results_sun <- readRDS('mvtraits_sun_raw_output.rds')
+priors_sun <- summarize_stan(results_sun, params, pft_levels)
+save(priors_sun, file = 'stan_priors_sun.RData')
