@@ -5,7 +5,10 @@ Authors@R: person("Alexey", "Shiklomanov", email = "ashiklom@bu.edu", role = c("
 Description: Fir EDR prior distributions
 Depends:
     R (>= 3.3.2),
-    nimble
+    nimble,
+    reshape2,
+    dplyr,
+    rstan
 License: MIT License
 Encoding: UTF-8
 LazyData: true
